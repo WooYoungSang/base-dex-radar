@@ -1,4 +1,5 @@
 import asyncio
+import os
 from typing import Optional
 
 import httpx
@@ -6,7 +7,7 @@ import httpx
 from .models import Pool
 from .cache import cache_get, cache_set, cache_key
 
-BASE_RPC = "https://mainnet.base.org"
+BASE_RPC = os.environ.get("BASE_HTTP_URL", "https://base.llamarpc.com")
 
 # Minimal ABI fragments for ERC20 + Uniswap V3 pool
 _SLOT0_SIG = "0x3850c7bd"  # slot0()
