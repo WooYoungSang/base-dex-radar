@@ -13,38 +13,39 @@ BASE_RPC = os.environ.get("BASE_HTTP_URL", "https://base.llamarpc.com")
 _SLOT0_SIG = "0x3850c7bd"  # slot0()
 _LIQUIDITY_SIG = "0x1a686502"  # liquidity()
 
-# Well-known pool addresses on Base (token_a/token_b/fee)
+# Well-known pool addresses on Base — UniV3 addresses verified on-chain
+# Aerodrome/BaseSwap/SushiSwap use V2-style AMMs (slot0 not supported); mock fallback used
 _KNOWN_POOLS: list[dict] = [
     {
-        "address": "0x4C36388bE6F416A29C8d8Eee81C771cE6bE14B5",
+        "address": "0xd0b53D9277642d899DF5C87A3966A349A798F224",
         "dex": "uniswap_v3",
         "token_a": "ETH",
         "token_b": "USDC",
         "fee": 0.0005,
     },
     {
-        "address": "0x420DD381b31aEf6683db6B902084cB0FFECe40D",
+        "address": "0x6c561b446416e1a00e8e93e221854d6ea4171372",
+        "dex": "uniswap_v3",
+        "token_a": "ETH",
+        "token_b": "USDC",
+        "fee": 0.0030,
+    },
+    {
+        "address": "0x7f670f78B17dEC44d5Ef68a48740b6f8849cc2e6",
         "dex": "aerodrome",
         "token_a": "ETH",
         "token_b": "USDC",
         "fee": 0.0030,
     },
     {
-        "address": "0x7E3411B04766089cFaa52DB688855356A12f05D1",
+        "address": "0x0b25c51637c43decd6cc1c1e3da4518d54ddb528",
         "dex": "baseswap",
         "token_a": "ETH",
         "token_b": "USDC",
-        "fee": 0.0030,
+        "fee": 0.0025,
     },
     {
-        "address": "0xEB18a5F72bFBD9f9a5e84B0F8a97B8bC4B0CC40",
-        "dex": "sushiswap",
-        "token_a": "ETH",
-        "token_b": "USDC",
-        "fee": 0.0030,
-    },
-    {
-        "address": "0x9e5AAC1Ba1a2e6aEd6b32689DFcF62A509Ca96f",
+        "address": "0xd92e0767473d1e3ff11ac036f2b1db90ad0ae55f",
         "dex": "uniswap_v3",
         "token_a": "ETH",
         "token_b": "USDT",
@@ -59,23 +60,23 @@ _KNOWN_POOLS: list[dict] = [
     },
 ]
 
-# Mock prices used when RPC is unavailable
+# Mock prices used when RPC slot0 call is unavailable (V2 AMMs or RPC failure)
 _MOCK_PRICES: dict[str, float] = {
-    "0x4C36388bE6F416A29C8d8Eee81C771cE6bE14B5": 3450.25,
-    "0x420DD381b31aEf6683db6B902084cB0FFECe40D": 3452.80,
-    "0x7E3411B04766089cFaa52DB688855356A12f05D1": 3448.90,
-    "0xEB18a5F72bFBD9f9a5e84B0F8a97B8bC4B0CC40": 3451.10,
-    "0x9e5AAC1Ba1a2e6aEd6b32689DFcF62A509Ca96f": 3449.75,
+    "0xd0b53D9277642d899DF5C87A3966A349A798F224": 2420.00,
+    "0x6c561b446416e1a00e8e93e221854d6ea4171372": 2420.50,
+    "0x7f670f78B17dEC44d5Ef68a48740b6f8849cc2e6": 2421.80,
+    "0x0b25c51637c43decd6cc1c1e3da4518d54ddb528": 2419.90,
+    "0xd92e0767473d1e3ff11ac036f2b1db90ad0ae55f": 2420.25,
     "0xcDAC0d6c6C59727a65F871236188350531885C43": 1.0001,
 }
 
 _MOCK_LIQUIDITY: dict[str, float] = {
-    "0x4C36388bE6F416A29C8d8Eee81C771cE6bE14B5": 5_000_000,
-    "0x420DD381b31aEf6683db6B902084cB0FFECe40D": 3_200_000,
-    "0x7E3411B04766089cFaa52DB688855356A12f05D1": 1_800_000,
-    "0xEB18a5F72bFBD9f9a5e84B0F8a97B8bC4B0CC40": 900_000,
-    "0x9e5AAC1Ba1a2e6aEd6b32689DFcF62A509Ca96f": 2_100_000,
-    "0xcDAC0d6c6C59727a65F871236188350531885C43": 8_500_000,
+    "0xd0b53D9277642d899DF5C87A3966A349A798F224": 8_500_000,
+    "0x6c561b446416e1a00e8e93e221854d6ea4171372": 3_200_000,
+    "0x7f670f78B17dEC44d5Ef68a48740b6f8849cc2e6": 4_100_000,
+    "0x0b25c51637c43decd6cc1c1e3da4518d54ddb528": 1_200_000,
+    "0xd92e0767473d1e3ff11ac036f2b1db90ad0ae55f": 2_800_000,
+    "0xcDAC0d6c6C59727a65F871236188350531885C43": 9_200_000,
 }
 
 
