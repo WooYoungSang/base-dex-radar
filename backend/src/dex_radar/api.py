@@ -27,7 +27,7 @@ _pools: list[Pool] = []
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global _pools
-    _pools = await fetch_all_pools(use_rpc=False)
+    _pools = await fetch_all_pools(use_rpc=True)
     yield
 
 
