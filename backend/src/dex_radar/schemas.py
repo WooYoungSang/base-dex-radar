@@ -91,6 +91,7 @@ class ArbitrageResponse(BaseModel):
     token: str
     cycles: list[ArbitrageCycleResponse]
     elapsed_us: int = 0
+    gpu: bool = False
 
 
 class HealthResponse(BaseModel):

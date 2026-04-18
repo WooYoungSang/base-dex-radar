@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .liquidity_mapper import compute_liquidity_depth
 from .models import Pool
 from .opportunity_detector import find_opportunities
+from .cuda_bellman_ford import find_arbitrage_cycles_gpu
 from .path_finder import find_arbitrage_cycles, find_best_route
 from .pool_reader import fetch_all_pools
 from .price_engine import build_price_quotes, compare_prices
@@ -128,7 +129,9 @@ async def get_arbitrage(
     import time
     pools = _require_pools()
     t0 = time.monotonic()
-    cycles = find_arbitrage_cycles(pools, token.upper(), max_hops=max_hops)
+    cycles, used_gpu = find_arbitrage_cycles_gpu(pools, token.upper(), max_hops=max_hops)
+    if not used_gpu:
+        cycles = find_arbitrage_cycles(pools, token.upper(), max_hops=max_hops)
     elapsed_us = int((time.monotonic() - t0) * 1_000_000)
     return ArbitrageResponse(
         token=token.upper(),
@@ -143,6 +146,7 @@ async def get_arbitrage(
             for c in cycles
         ],
         elapsed_us=elapsed_us,
+        gpu=used_gpu,
     )
 
 
