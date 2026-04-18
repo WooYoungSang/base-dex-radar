@@ -1,9 +1,9 @@
-FROM nvidia/cuda:12.6.3-runtime-ubuntu22.04
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y python3.11 python3-pip python3.11-venv && \
-    ln -sf /usr/bin/python3.11 /usr/bin/python3 && \
-    ln -sf /usr/bin/python3.11 /usr/bin/python && \
-    rm -rf /var/lib/apt/lists/*
+FROM nvidia/cuda:12.6.3-runtime-ubuntu22.04 AS cuda-libs
+
+FROM python:3.11-slim
+# Copy only the CUDA runtime shared library needed for ctypes
+COPY --from=cuda-libs /usr/local/cuda-12.6/targets/x86_64-linux/lib/libcudart.so.12 /usr/local/lib/libcudart.so.12
+RUN ln -s /usr/local/lib/libcudart.so.12 /usr/local/lib/libcudart.so && ldconfig
 WORKDIR /app
 COPY pyproject.toml .
 COPY src/ src/
