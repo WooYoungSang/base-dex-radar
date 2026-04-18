@@ -20,7 +20,10 @@ _lib: Optional[ctypes.CDLL] = None
 _cudart: Optional[ctypes.CDLL] = None
 _gpu_available: Optional[bool] = None
 
-_SO_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "libbellman.so")
+_SO_PATH = os.environ.get(
+    "BELLMAN_SO_PATH",
+    os.path.join(os.path.dirname(__file__), "..", "..", "libbellman.so"),
+)
 _H2D = 1  # cudaMemcpyHostToDevice
 
 

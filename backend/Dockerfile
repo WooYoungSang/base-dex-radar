@@ -4,6 +4,7 @@ FROM python:3.11-slim
 # Copy only the CUDA runtime shared library needed for ctypes
 COPY --from=cuda-libs /usr/local/cuda-12.6/targets/x86_64-linux/lib/libcudart.so.12 /usr/local/lib/libcudart.so.12
 RUN ln -s /usr/local/lib/libcudart.so.12 /usr/local/lib/libcudart.so && ldconfig
+ENV BELLMAN_SO_PATH=/app/libbellman.so
 WORKDIR /app
 COPY pyproject.toml .
 COPY src/ src/
