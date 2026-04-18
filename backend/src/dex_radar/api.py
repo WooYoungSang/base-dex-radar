@@ -7,10 +7,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from .liquidity_mapper import compute_liquidity_depth
 from .models import Pool
 from .opportunity_detector import find_opportunities
-from .path_finder import find_best_route
+from .path_finder import find_arbitrage_cycles, find_best_route
 from .pool_reader import fetch_all_pools
 from .price_engine import build_price_quotes, compare_prices
 from .schemas import (
+    ArbitrageCycleResponse,
+    ArbitrageResponse,
+    CycleHopResponse,
     GasResponse,
     HealthResponse,
     LiquidityLevel,
@@ -33,7 +36,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="Base DEX Radar API",
-    description="AI-powered DEX intelligence platform for Base — powered by KAIROS CUDA PathFinder",
+    description="AI-powered DEX intelligence platform for Base — Bellman-Ford arbitrage cycle detection ported from KAIROS wavis-kairos",
     version="0.1.0",
     lifespan=lifespan,
 )
@@ -113,6 +116,33 @@ async def get_route(
         gas_estimate=route.gas_estimate,
         price_impact=route.price_impact,
         effective_price=route.effective_price,
+    )
+
+
+@app.get("/api/arbitrage", response_model=ArbitrageResponse, tags=["arbitrage"])
+async def get_arbitrage(
+    token: str = Query("ETH", description="Start/end token for cycle search, e.g. ETH"),
+    max_hops: int = Query(4, ge=2, le=6, description="Maximum hops per cycle"),
+    x_api_key: Annotated[str | None, Header()] = None,
+):
+    import time
+    pools = _require_pools()
+    t0 = time.monotonic()
+    cycles = find_arbitrage_cycles(pools, token.upper(), max_hops=max_hops)
+    elapsed_us = int((time.monotonic() - t0) * 1_000_000)
+    return ArbitrageResponse(
+        token=token.upper(),
+        cycles=[
+            ArbitrageCycleResponse(
+                token=c.token,
+                hops=[CycleHopResponse(pool=h.pool, token_in=h.token_in, token_out=h.token_out, dex=h.dex) for h in c.hops],
+                amount_out_per_unit=c.amount_out_per_unit,
+                profit_pct=c.profit_pct,
+                gas_estimate=c.gas_estimate,
+            )
+            for c in cycles
+        ],
+        elapsed_us=elapsed_us,
     )
 
 

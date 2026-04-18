@@ -72,6 +72,27 @@ class OpportunityResponse(BaseModel):
     sell_pool: str
 
 
+class CycleHopResponse(BaseModel):
+    pool: str
+    token_in: str
+    token_out: str
+    dex: str
+
+
+class ArbitrageCycleResponse(BaseModel):
+    token: str
+    hops: list[CycleHopResponse]
+    amount_out_per_unit: float
+    profit_pct: float
+    gas_estimate: int
+
+
+class ArbitrageResponse(BaseModel):
+    token: str
+    cycles: list[ArbitrageCycleResponse]
+    elapsed_us: int = 0
+
+
 class HealthResponse(BaseModel):
     status: str = "ok"
     version: str = "0.1.0"
